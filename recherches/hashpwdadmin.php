@@ -1,0 +1,1 @@
+<?php $hash = password_hash('Superroot', PASSWORD_DEFAULT); echo $hash;

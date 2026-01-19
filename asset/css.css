@@ -1,0 +1,924 @@
+/* Ne toucher pas aux selecteurs " * " et " body "  ces valeurs attribuer sont des valeur par defauts utiles */ 
+
+/* ----------------------##############################-----------------------------------------------------------------------------------------
+    FONCTIONNALITES DE BASES INDISPENSABLES APPLIQUER PAR DEFAUTS A TOUTE NOS PAGES SANS EXCEPTION
+-------------------###############-> p1-debut <-################--------------------------------------------------------------------------------*/
+
+*{
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    outline: none;/* elimine certains effets qu'ajoute par defaut les navigateurs */
+    list-style: none;
+    text-decoration: none;
+    word-spacing: 0px; /* Réduire l'espacement entre les mots */ 
+}
+body
+{
+    margin: 0;/* elimination des espaces tout aux bordures de la page car certain navigateurs mettent des valeurs de margin non voulu a notre page*/
+    padding: 0;/*elimination des espaces inutile a l'interieur de la boite de page car certain navigateurs mettent des valeurs de padding non voulu a notre page*/
+    word-spacing: 0px; /* Réduire l'espacement entre les mots */
+    padding-top: 55px;
+}
+
+
+
+/*-------------------###############-> p1-fin <-################-------------------------------------------------------------------------------*/
+
+
+
+/* CSS POUR LE SITE DES JEUX DE COMPETITIONS DU CLUB INFORMATIQUE CBS 2023-2024 
+============================================================================================ */
+
+
+    #h1-HorizontalCenter
+    {
+        width: 50px;
+        text-align: center;
+        width: auto;
+    }
+
+    .main-corpsPageSujetAccueil #output{
+        border: 5px solid black;
+        background-color: rgba(255, 255, 255, 0);
+        color: black;
+        text-align: center;
+        font-size: 80px;
+        font-size: 80px;
+        height: 200px;
+        width: 250px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+
+    }
+    .cercle_transparent
+    {
+        border: 5px solid black;
+        background-color: rgba(255, 255, 255, 0);
+        color: black;
+        text-align: center;
+        font-size: 80px;
+        font-size: 80px;
+        height: 200px;
+        width: 250px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%); /* deplacement de l'elt par rapport a l'axe des X et l'axe Y */
+
+    }
+    /* Bouton de tirage circulaire (harmonisé orange) */
+    .boutton_rouge {
+        background-color: var(--color-primary);
+        border: none;
+        color: var(--color-light);
+        text-align: center;
+        /* padding: 15px 15px; */
+        /* font-size: 80px; */
+        border-radius: 50%;
+        height: 200px;
+        width: 200px;
+        text-decoration: none;
+        /* position: absolute; */
+        top: 50%;
+        left: 50%;
+        /* transform: translate(-50%, 80%); */
+        cursor: pointer;
+        transition: all 0.3s;
+        position: static;          /* annule le positionnement absolu global */
+        transform: none !important;/* annule le translate global */
+        display: inline-block;     /* permet le centrage naturel */
+        margin: 10px 0 12px 0;     /* espace autour du bouton */
+        font-size: 60px;           /* taille du texte réduite pour tenir dans le cercle */
+        padding: 2px 10px;        /* padding réduit pour éviter le débordement */
+      
+    }
+    
+    .boutton_rouge:hover {
+        background-color: var(--color-primary-dark);
+        height: 230px;
+        width: 220px;
+        box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    #choix_jeux
+    {
+        color: red;
+        width: 200px;
+    }
+
+/*============================================================================================*/
+.question {
+    display: block;
+    margin: auto;
+    margin-top: 100px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 700px;
+    width: 80%;
+    font-weight: bold;
+}
+.question .p-question{
+    font-size: 40px;
+}
+.choices {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+}
+
+.top-choices {
+    display: flex;
+    justify-content: space-between;
+}
+
+.bottom-choices {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.choice {
+    padding: 15px;
+    margin: 10px;
+    border: 1px solid #ccc;
+    border-radius: 15px;
+    cursor: pointer;
+    background-color: #bcbabaa9; /* Fond blanc par défaut */
+    font-size: 25px;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    text-align: left;
+    width: 300px;
+    font-weight: bold;
+}
+
+   /* Survol des réponses harmonisé à l'orange */
+   .choice:hover {
+       background-color: var(--color-primary);
+       color: var(--color-light);
+   }
+
+.choice.selected {
+    background-color: lightblue; /* Couleur au clic pour indiquer le choix */
+}
+
+.choice.correct {
+    background-color: lightgreen; /* Couleur des bonnes réponses */
+}
+
+.choice.wrong {
+    background-color: salmon; /* Couleur des mauvaises réponses */
+}
+/*============================================================================================= */
+/* special accueil */
+
+.main-corpsPageAccueil{
+    max-width: 1450px;
+    margin: 0 auto;
+}
+    .main-corpsPageAccueil #div-textesPresentation
+    {
+        text-align: center;
+        margin-top: 60px;
+        margin-bottom: 30px;
+        /* border: 2px solid red; */
+    }
+        .main-corpsPageAccueil #div-textesPresentation h1{
+            color:red;
+            text-align: center;
+            padding: 0;
+            margin: 0;
+            font-family:Verdana, Geneva, Tahoma, sans-serif;
+            /* border: 2px solid yellow; */
+        }
+            .main-corpsPageAccueil #div-textesPresentation #div-boiteTextes
+            {
+                margin: 0;
+                padding: 0;
+                /* background-color: #0589b1; */
+            }
+                .main-corpsPageAccueil #div-textesPresentation #div-boiteTextes p
+                {
+                    font-size: 20px;
+                }
+                /* .main-corpsPageAccueil #div-textesPresentation h1 #p2{
+                    color:black;
+                    margin: 0;
+                    padding: 0;
+                } */
+        
+
+.main-corpsPageAccueil .section-images-transition {
+    width: 100%; /* Ajustez la largeur à 100% pour occuper toute la largeur de la page */
+}
+        
+.main-corpsPageAccueil .section-images-transition .mySlides_fade{
+    width: 100%; /* Ajustez la largeur à 100% pour occuper toute la largeur de la page */
+    height: auto; /* Ajustez la hauteur automatiquement pour conserver le rapport d'aspect */
+    margin: 0; /* Supprimez la marge pour coller à la gauche de la page */
+    left: 0; /* Réglez la position à 0 pour être à gauche */
+}
+
+.main-corpsPageAccueil .section-images-transition .mySlides_fade img {
+    width: 100%;
+    height: auto;
+    max-height: 500px; /* Réglez la hauteur maximale au format de l'écran (80% de la hauteur de la vue) */
+    object-fit:cover;
+}
+.main-corpsPageAccueil .section-images-transition .mySlides_fade .text{
+    width: 100%;
+    height: auto;
+    background-color: rgba(255, 0, 0, 0.494);
+    font-size: 20px;
+}
+
+.section-textTemoignages {
+    max-width: 800px;
+    margin: 10px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 5px;
+
+}
+.section-textTemoignages p {
+
+        display: flex;
+        margin-left: 27px;
+}
+
+.section-textTemoignages h2 {
+    color: #333;
+}
+
+.div-textTemoignages {
+    margin-bottom: 20px;
+}
+
+.div-textTemoignages p {
+    position: relative;
+    margin-left: 12px; 
+    font-style: italic;
+    margin-bottom: 10px;
+}
+
+.div-textTemoignages .auteurText {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+
+/* DANS LES DEUX PAGES exercices et corrections */
+.contenuCorpsPages
+{
+    color: #333;
+    background-color: white;
+    max-width: 850px;
+    margin: 0 auto;
+    padding: 20px;
+    box-shadow: 0px 0px 16px rgb(233, 232, 232);
+    margin-top: 50px;
+    word-spacing: -3px; /* Réduire l'espacement entre les mots */
+}
+.section_Exercice,
+.section_Correction {
+    margin-top: 20px;   
+}
+    .contenuCorpsPages section .p-texte_nomMatiere,
+    .contenuPage .section-EEC_uti_zoneSuperviseur .p-texte_nomMatiere
+    {
+       margin-bottom: 0; 
+       font-size: 16px;
+       font-style: italic;
+    }
+        .contenuCorpsPages section .p-texte_exercice,
+        .contenuCorpsPages section .p-texte_correction,
+        .contenuPage .section-EEC_uti_zoneSuperviseur .p-texte_exercice
+        {
+            font-size: 25px;
+            font-weight: bold;
+            color: rgb(243, 99, 99);
+        }
+            .contenuCorpsPages section .p-texte_exercice .p-texte_titre,
+            .contenuCorpsPages section .p-texte_correction .p-texte_titre,
+            .contenuPage .section-EEC_uti_zoneSuperviseur .p-texte_titre
+            {
+                color: #333;
+                font-size: 25px;
+            }
+                .contenuCorpsPages section .p-texte_libelle
+                {
+                    font-size: 20px;
+                    text-align: justify;
+                    margin-top: 5px;
+                    margin-bottom: 9px;
+                } 
+                    .contenuCorpsPages section .p-texte_pdf 
+                    {
+                        color: rgba(255, 0, 0, 0.89);
+                        font-size: 16px;
+                        margin-bottom: 8px;
+                    }
+                        .contenuCorpsPages section .p-texte_dateHeurePublication,
+                        .contenuPage .section-EEC_uti_zoneSuperviseur .p-texte_dateHeurePublication
+                        {
+                            font-size: 10px;
+                            margin-top: 5px;
+                            margin-bottom: 0;
+                        }
+
+/* DANS LA PAGE corpsPageSujet */
+body .main-corpsPageSujetAccueil
+{
+    margin: 0 auto;
+    margin: 0;
+    position: relative;
+    top: 50px;
+    margin-top: 55px;
+}
+    body .main-corpsPageSujetAccueil a
+    {
+        color: white;
+    }
+    body .main-corpsPageSujetAccueil .div-contenu_corpsPageSujets
+    {
+        max-width: 500px;
+        margin: 0 auto;
+        padding: 10px;
+        background-color: #ffffff00;
+        border-radius: 5px;
+        height: auto;
+    }
+        .solo-page #nombreAnime 
+        { 
+            margin-bottom: 16px; 
+        }
+        .solo-page p.note-explication { margin-top: 6px; color:#667085; }
+        /* Cartes sur la page des jeux: harmonisées à l'orange */
+        body .main-corpsPageSujetAccueil .div-contenu_corpsPageSujets .section-sujet
+        {
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 50px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+            margin: 0 auto;
+            margin-bottom: 10px;
+            position: relative;
+            display: flex;
+            justify-content: center; /* Centre horizontalement */
+            align-items: center; /* Centre verticalement */
+            height: 16vh;
+            background-color: var(--color-primary);
+            color: var(--color-light);
+        }
+        body .main-corpsPageSujetAccueil .div-contenu_corpsPageSujets .section-sujet :hover
+        {
+            background-color: var(--color-light);
+            color:  var(--color-primary);
+
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 50px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+            margin: 0 auto;
+            margin-bottom: 10px;
+            position: relative;
+            display: flex;
+            justify-content: center; /* Centre horizontalement */
+            align-items: center; /* Centre verticalement */
+            height: 16vh;
+        }
+            body .main-corpsPageSujetAccueil .div-contenu_corpsPageSujets .section-sujet a
+            {
+                text-decoration: none;
+            }
+                body .main-corpsPageSujetAccueil .div-contenu_corpsPageSujets .section-sujet a p
+                {
+                    font-size: 20px;
+                    font-weight: bold;
+                    width: 300px;
+                    padding-top: 34px;
+                    padding-bottom: 34px;     
+                    position: absolute;
+                    top: 50%; /* Centre par rapport à Y */
+                    left: 50%; /* Centre par rapport à X */
+                    transform: translate(-50%, -50%); /* Pour ajuster le centrage */
+            
+                }
+
+/*
+    Thème global (Orange / Blanc / Noir)
+    On introduit des variables CSS pour uniformiser les couleurs sans casser l'existant.
+*/
+:root{
+    --color-primary: #f97316;    /* Orange */
+    --color-primary-dark: #ea580c;/* Orange foncé */
+    --color-dark: #111827;       /* Noir profond */
+    --color-light: #ffffff;      /* Blanc */
+}
+
+.body-CcSnSrTdTp .main-corpsPageSujetsCcSnSrTdTp
+{
+    position: relative;
+    top: 50px;
+    padding: 5px;
+    margin: 0;
+}
+.body-CcSnSrTdTp .main-corpsPageSujetsCcSnSrTdTp .section-sujet p {
+    margin-right: 30px;
+    font-size: bold;
+    align-items: center;
+
+}
+.body-CcSnSrTdTp .main-corpsPageSujetsCcSnSrTdTp h1{
+    background-color: #2c363f;;
+    color: #fff;
+    text-align: center;
+
+
+}
+.body-CcSnSrTdTp .main-corpsPageSujetsCcSnSrTdTp table{
+    border: #000 1px;
+    align-items: center;
+}
+
+.body-CcSnSrTdTp .main-corpsPageSujetsCcSnSrTdTp a button{
+    font-weight: bold;
+    background-color: #69eb7f;
+    width: 95px;
+    color:#2a2a2a;
+    border: none;
+    box-shadow: #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* DANS LES PAGES corpsPageSujetsCc corpsPageSujetsSn ... Sr, Td, Tp */
+
+/* Style pour les tableaux à l'intérieur de .section-sujets */
+.section-sujets table {
+    width: 100%; /* Largeur de tableau à 100% de la largeur de la section */
+    border-collapse: collapse; /* Fusion des bordures de tableau */
+    margin-top: 10px; /* Marge en haut du tableau */
+}
+
+/* Style pour l'icône PDF */
+.section-sujets table tr td a .pdf-icon {
+    width: 25px; /* Largeur de l'icône */
+    height: 25px; /* Hauteur de l'icône */
+    margin-right: 5px; /* Marge à droite de l'icône */
+    vertical-align: middle; /* Alignement vertical au milieu */
+}
+
+/* Style pour la balise <p> qui affiche le nom de chaque filiere */
+.section-sujets p {
+    color: rgba(28, 21, 219, 0.95);
+    font-size: 30px;
+    text-align: center;
+    margin-top: 10px;
+    border-bottom: 1px solid;
+}
+/* Style pour les cellules td à l'intérieur des tableaux */
+.section-sujets td {
+    padding: 10px; /* Espacement interne des cellules */
+    border: 1px solid #ccc; /* Bordure de 1 pixel solide avec une couleur grise */
+    text-align: left; /* Alignement du texte à gauche */
+}
+
+    /* Style pour les boutons à l'intérieur des cellules td */
+    .section-sujets td button {
+        padding: 5px 10px; /* Espacement interne des boutons */
+        background-color: #12b700; /* Couleur de fond du bouton */
+        color: #fff; /* Couleur du texte du bouton */
+        border: none; /* Supprime la bordure du bouton */
+        cursor: pointer; /* Curseur de type pointeur au survol */
+        font-weight: bold; /* Texte en gras */
+        float: right; /* Positionne le bouton à droite */
+        border-radius: 3px 3px 3px 3px ;
+    }
+
+        /* Style pour les boutons au survol */
+        .section-sujets td button:hover {
+            background-color: rgba(192, 36, 36, 0.762); /* Couleur de fond au survol */
+            font-size: medium;
+
+        }
+
+/*-------------------###############-> p3-fin <-################-------------------------------------------------------------------------------*/
+
+
+/* ----------------------##############################-----------------------------------------------------------------------------------------
+                    PROPRIETES APPLIQUERS AU FOMRULAIRE PUBLIER LES JEUX
+-------------------###############-> p4-debut <-################--------------------------------------------------------------------------------*/
+/* Conteneur principal spécifique */
+#main-publier-jeu {
+    padding: 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Formulaire spécifique */
+.form-publier-jeu {
+    background-color: #ffffff;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Titre spécifique */
+#titre-form-publier-jeu {
+    text-align: center;
+    font-size: 1.8rem;
+    color: #2c3e50;
+    margin-bottom: 2rem;
+    font-weight: 600;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 0.5rem;
+}
+
+/* Groupes de champs spécifiques */
+.form-group-publier-jeu {
+    margin-bottom: 1.5rem;
+}
+
+.form-group-publier-jeu label {
+    display: block;
+    margin: 1.2rem 0 0.5rem;
+    font-weight: 600;
+    color: #34495e;
+    font-size: 1rem;
+}
+
+/* Select spécifique */
+.select-publier-jeu {
+    width: 100%;
+    padding: 0.8rem;
+    border: 2px solid #dfe6e9;
+    border-radius: 6px;
+    background-color: #f8f9fa;
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+    transition: border-color 0.3s;
+}
+
+.select-publier-jeu:focus {
+    border-color: #3498db;
+    outline: none;
+}
+
+/* Textareas spécifiques */
+.textarea-publier-jeu {
+    width: 100%;
+    min-height: 100px;
+    padding: 0.8rem;
+    border: 2px solid #dfe6e9;
+    border-radius: 6px;
+    font-size: 1rem;
+    resize: vertical;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    background-color: #f8f9fa;
+}
+
+.textarea-publier-jeu:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+    outline: none;
+}
+
+/* Textarea bonne réponse spécifique */
+.textarea-bonne-reponse {
+    background-color: #e8f4fc;
+    border-color: #3498db;
+}
+
+/* Bouton spécifique */
+.btn-submit-publier-jeu {
+    display: block;
+    width: 100%;
+    padding: 1rem;
+    margin-top: 2rem;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.btn-submit-publier-jeu:hover {
+    background-color: #2980b9;
+}
+
+.btn-submit-publier-jeu:active {
+    transform: scale(0.98);
+}
+
+/* Responsive Design spécifique */
+@media (max-width: 768px) {
+    #main-publier-jeu {
+        padding: 1rem;
+    }
+    
+    .form-publier-jeu {
+        padding: 1.5rem;
+    }
+    
+    #titre-form-publier-jeu {
+        font-size: 1.5rem;
+    }
+    
+    .textarea-publier-jeu {
+        min-height: 80px;
+    }
+}
+
+/* Validation spécifique */
+.textarea-publier-jeu:required {
+    border-left: 4px solid #e74c3c;
+}
+
+.textarea-publier-jeu:required:valid {
+    border-left: 4px solid #2ecc71;
+}
+
+/*-------------------###############-> p4-fin <-################-------------------------------------------------------------------------------*/
+
+/* ----------------------##############################-----------------------------------------------------------------------------------------
+        PAGE LOTS
+-------------------###############-> p1-debut <-################--------------------------------------------------------------------------------*/
+.lotsPage_presentation-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    text-align: center;
+}
+
+.lotsPage_lots-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 40px;
+}
+
+.lotsPage_lot-item {
+    width: 250px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.lotsPage_lot-image {
+    width: 200px;
+    height: 200px;
+    object-fit: contain;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    margin-bottom: 15px;
+}
+
+.lotsPage_lot-name {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
+.lotsPage_h1 {
+    font-size: 2.5rem;
+    color: #2c3e50;
+    margin-bottom: 20px;
+    animation: fadeIn 1s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+
+/* ----------------------##############################-----------------------------------------------------------------------------------------
+    PROPRIETES RESPONSIVE " @media " ADAPTATION DU SITE A TOUS LES ECRANS DIMENSION->[SAMARTPHONE][TABLETTE][PC][ECRAN-TV]
+-------------------###############-> p00-debut <-################--------------------------------------------------------------------------------*/
+@media screen and (min-width: 768px)
+{
+    body .BanniereSuperieur #icone-menuTelephone 
+    {
+        display: none;
+        position:absolute;
+        height: 35px;
+        width: 35px;
+        right: 10px;
+        top: 5px;
+        margin:0;
+    }
+}
+
+/* Styles pour LA BANNIERE SUPERIEUR _-_ les menu responsive (écrans étroits) */
+@media (max-width: 768px) {
+    .BanniereSuperieur 
+    {
+      text-align: center;
+    }
+  
+    .BanniereSuperieur .ul-global {
+      display: none;
+    }
+    body .BanniereSuperieur #icone-menu 
+    {
+        display:none;
+    }
+    .banderole-menu {
+        display: NONE;
+    }
+    body .BanniereSuperieur #icone-menuTelephone 
+    {
+        position:absolute;
+        height: 35px;
+        width: 35px;
+        right: 40px;
+        top: 5px;
+        margin:0;
+    }
+
+    .BanniereSuperieur .banderole-listeMenuTelephone-open{
+        display: block;
+        position: absolute; 
+        right: 0;
+        padding: 5px;
+        margin-top: 30px;
+        background-color: #0088a9;
+        border: 1px solid #80242495;
+        height: 280px;
+        box-shadow: 1px 0px 0px rgb(233, 232, 232);
+        width: 125px;
+        /* border: 2px solid red; */
+    }
+        body .BanniereSuperieur .banderole-listeMenuTelephone-open li
+        {
+            /* display: block; */
+            float: left;
+            margin: 10px 0;
+            width: 100%;        
+            padding: 4px 0;
+            margin-left: 10px;
+        /* border: 2px solid red; */
+        }
+            body .BanniereSuperieur .banderole-listeMenuTelephone-open #menuAccueil
+            {
+                margin-left: 10px;
+            }
+        
+
+
+    .body-CcSnSrTdTp .ul-global li,
+    #body-cefodbusinessshool .ul-global li,
+    #body-exercices .ul-global li,
+    #body-zone .ul-global li ,
+    #body-corrections .ul-global li,
+    #body-form_admin .ul-global li,
+    #body-accueil .ul-global li,
+    #body-form_publierEEC .ul-global li,
+    #body-form_connexion .ul-global li,
+    #body-form_inscription .ul-global li
+    {
+        margin-left: 0;
+    } 
+    .body-CcSnSrTdTp .ul-global li a:hover,
+    #body-cefodbusinessshool .ul-global li a:hover,
+    #body-exercices .ul-global li a:hover,
+    #body-zone .ul-global li a:hover,
+    #body-form_admin .ul-global li a:hover,
+    #body-corrections .ul-global li a:hover,
+    #body-accueil .ul-global li a:hover,
+    #body-form_publierEEC .ul-global li a:hover,
+    #body-form_connexion .ul-global li a:hover,
+    #body-form_inscription .ul-global li a:hover
+    {
+        border-radius: 0px;
+    }
+    .body-CcSnSrTdTp .ul-global #menuAccueil,
+    #body-cefodbusinessshool .ul-global #menuAccueil,
+    #body-exercices .ul-global  #menuAccueil,
+    #body-corrections .ul-global #menuAccueil,
+    #body-zone .ul-global #menuAcceuil,
+    #body-form_admin .ul-global #menuAccueil,
+    #body-accueil .ul-global #menuAccueil,
+    #body-form_publierEEC .ul-global  #menuAccueil,
+    #body-form_connexion .ul-global  #menuAccueil,
+    #body-form_inscription .ul-global  #menuAccueil
+    {
+        margin-top: 0;
+    }  
+    select 
+    {
+        float: left;
+        width: 100%;
+    }
+       
+
+/* FIN ------------------------------------------------------------ */
+
+/* Styles pour LA BANNIERE INFERIEUR _-_ Responsive @media query */
+.banniereInferieur p {
+    font-size: 10px;
+ }
+/* FIN ------------------------------------------------------------ */
+            
+} /* FIN -> @Media queries---------------------------------------------------- */
+
+
+
+/* RESPONSIVE APPLIQUER AUX FORMULAIRES _-_ @Media queries pour les smartphones et les tablettes */
+@media (max-width: 768px) {
+    #body-form_inscription .div-form_contenu,
+    #body-form_connexion .div-form_contenu,
+    #body-form_admin .div-form_contenu,
+    #body-form_publierEEC .div-form_contenu,
+    #body-zone.div-form_contenu
+    {
+        width: 90%;
+        max-width: 100%;
+    }
+}/* FIN -> @Media querie---------------------------------------------------- */
+
+@media (max-width: 480px) {
+    #body-zone.div-form_contenu,
+    #body-form_inscription .div-form_contenu,
+    #body-form_connexion .div-form_contenu,
+    #body-form_admin .div-form_contenu,
+    #body-form_publierEEC .div-form_contenu {
+        margin-top: 10px;
+        padding: 15px;
+    }
+}/* FIN -> @Media querie---------------------------------------------------- */
+/*-------------------###############-> fin <-################-------------------------------------------------------------------------------*/
+
+
+
+
+/*-------##########--debut-> @media POUR LES PAGES : coprsPageSujets Cc, Sr, Sn, Td, Tp    ###############----------------------------------------------*/
+/* Style par défaut pour les écrans de taille normale */
+/* ... Votre CSS existant ... */
+
+/* Style pour les écrans de taille moyenne (par exemple, tablettes) */
+@media screen and (max-width: 1024px) {
+    /* Réduire la taille de l'icône PDF */
+    .section-sujets td a .pdf-icon {
+        width: 20px;
+        height: 20px;
+    }
+
+    /* Ajuster la taille de la police pour le nom de la matière */
+    .section-sujets td .matiere {
+        font-size: 16px;
+    }
+
+    /* Ajuster la taille de la police pour l'année */
+    .section-sujets td .annee {
+        font-size: 14px;
+    }
+
+    /* Ajuster la taille de la police pour les boutons */
+    .section-sujets td button {
+        font-size: 16px;
+    }
+}
+
+/* Style pour les écrans de petite taille (par exemple, smartphones) */
+@media screen and (max-width: 768px) {
+    /* Réduire davantage la taille de l'icône PDF */
+    .section-sujets td a .pdf-icon {
+        width: 16px;
+        height: 16px;
+    }
+
+    /* Ajuster la taille de la police pour le nom de la matière */
+    .section-sujets td .matiere {
+        font-size: 14px;
+    }
+
+    /* Ajuster la taille de la police pour l'année */
+    .section-sujets td .annee {
+        font-size: 12px;
+    }
+
+    /* Ajuster la taille de la police pour les boutons */
+    .section-sujets td button {
+        font-size: 14px;
+    }
+}
+/*-------##########--debut-> @media POUR LES PAGES  : Cc, Sr, Sn, Td, Tp    ###############----------------------------------------------*/     

@@ -1,0 +1,9 @@
+RewriteEngine On
+
+# 1) Forbid direct access to PHP files in sensitive folders (admin & view)
+RewriteRule ^administration/.*\.php$ - [F,L]
+RewriteRule ^view/.*\.php$ - [F,L]
+
+# 2) Route all other paths through the router (index.php)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.+)$ index.php?r=$1 [QSA,L]

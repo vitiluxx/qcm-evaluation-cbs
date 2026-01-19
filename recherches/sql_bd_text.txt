@@ -1,0 +1,67 @@
+mysql -u root -p 
+USE jci_bd;
+
+__________________________________
+
+CREATE DATABASE jci_bd;
+DROP DATABASE IF EXISTS jci_bd;
+
+DROP TABLE IF EXISTS solo;
+DROP TABLE IF EXISTS utilisateurs;
+DROP TABLE IF EXISTS evaluations;
+DROP TABLE IF EXISTS evaluation_attempts;
+
+__________________________________
+
+
+CREATE TABLE solo (
+  `id_solo` int(11) AUTO_INCREMENT PRIMARY KEY NOT NULL,
+  `tirage_solo` int(11) DEFAULT NULL,
+  `question_solo` text NOT NULL,
+  `reponse_a_solo` text NOT NULL,
+  `reponse_b_solo` text NOT NULL,
+  `reponse_c_solo` text NOT NULL,
+  `reponse_d_solo` text NOT NULL,
+  `bonne_reponse_solo` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE utilisateurs (
+  `id` int(11) AUTO_INCREMENT PRIMARY KEY,
+  `nom` varchar(100) NOT NULL,
+  `date_creation` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+CREATE TABLE admins (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  username VARCHAR(100) NOT NULL UNIQUE,
+  password_hash VARCHAR(255) NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE evaluations (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  id_utilisateur INT NOT NULL,
+  id_solo INT NOT NULL,
+  attempts INT NOT NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  INDEX (id_utilisateur),
+  INDEX (id_solo),
+  INDEX (created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE evaluation_attempts (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  session_id VARCHAR(64) NOT NULL,
+  id_utilisateur INT NOT NULL,
+  id_solo INT NOT NULL,
+  attempt_index INT NOT NULL,
+  choice VARCHAR(255) NOT NULL,
+  is_correct TINYINT(1) NOT NULL DEFAULT 0,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  INDEX (id_utilisateur),
+  INDEX (id_solo),
+  INDEX (created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+//Pour hasher le mot de passe de l'admin avant d'inserer manuellement dans la BD depuis phpmyadmin:
+<?php $hash = password_hash('Superroot', PASSWORD_DEFAULT); echo $hash;
