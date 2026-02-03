@@ -21,7 +21,7 @@
         <div class="form-group-publier-jeu">
             <label for="choix_jeux_jeu">Choisir le type de D'EVALUATION: </label>
             <select name="choix_jeux" id="choix_jeux_jeu" class="select-publier-jeu">
-                <option value="">Quel est votre choix</option>
+                <!-- <option value="">Quel est votre choix</option> -->
                 <option value="solo">STANDARD</option>
             </select>
         </div>

@@ -61,8 +61,28 @@
         // Récupère un id_solo aléatoire non encore répondu par l'utilisateur
         public function getRandomSoloId($id_utilisateur)
         {
-            // Sélectionner une question non encore validée par cet utilisateur
-            // (exclusion basée sur la table evaluations)
+            // 0) Vérifier s'il existe un set déployé actif
+            $deployedExists = (int)$this->connexionBd->query('SELECT COUNT(*) FROM evaluation_sets WHERE is_active = 1 AND is_deployed = 1')->fetchColumn() > 0;
+
+            // 1) Essayer dans le set déployé (s'il existe)
+            $sqlDeployed = 'SELECT s.id_solo
+                            FROM solo s
+                            INNER JOIN evaluation_set_questions eq ON eq.id_solo = s.id_solo
+                            INNER JOIN evaluation_sets es ON es.id = eq.set_id AND es.is_active = 1 AND es.is_deployed = 1
+                            WHERE s.id_solo NOT IN (
+                                SELECT e.id_solo FROM evaluations e WHERE e.id_utilisateur = :u
+                            )
+                            ORDER BY RAND() LIMIT 1';
+            $stmt = $this->connexionBd->prepare($sqlDeployed);
+            $stmt->bindParam(':u', $id_utilisateur, PDO::PARAM_INT);
+            $stmt->execute();
+            $id = $stmt->fetchColumn();
+            if ($id) { return (int)$id; }
+
+            // Si un set est déployé mais plus aucune question dispo, on NE FAIT PAS de fallback
+            if ($deployedExists) { return null; }
+
+            // 2) Fallback: ancien comportement (aucun set déployé)
             $sql = 'SELECT s.id_solo
                     FROM solo s
                     WHERE s.id_solo NOT IN (
@@ -94,6 +114,31 @@
                     $excludeSql = ' AND s.id_solo NOT IN ('.implode(',', $placeholders).')';
                 }
             }
+
+            // 0) Vérifier s'il existe un set déployé actif
+            $deployedExists = (int)$this->connexionBd->query('SELECT COUNT(*) FROM evaluation_sets WHERE is_active = 1 AND is_deployed = 1')->fetchColumn() > 0;
+
+            // 1) Essayer dans le set déployé (s'il existe)
+            $sqlDeployed = 'SELECT s.id_solo
+                            FROM solo s
+                            INNER JOIN evaluation_set_questions eq ON eq.id_solo = s.id_solo
+                            INNER JOIN evaluation_sets es ON es.id = eq.set_id AND es.is_active = 1 AND es.is_deployed = 1
+                            WHERE s.id_solo NOT IN (
+                                SELECT e.id_solo FROM evaluations e WHERE e.id_utilisateur = :u
+                            )'. $excludeSql .'
+                            ORDER BY RAND() LIMIT 1';
+            $stmt = $this->connexionBd->prepare($sqlDeployed);
+            foreach ($params as $k=>$v) {
+                $stmt->bindValue($k, $v, is_int($v)? PDO::PARAM_INT : PDO::PARAM_STR);
+            }
+            $stmt->execute();
+            $id = $stmt->fetchColumn();
+            if ($id) { return (int)$id; }
+
+            // Si un set est déployé mais plus aucune question dispo, on NE FAIT PAS de fallback
+            if ($deployedExists) { return null; }
+
+            // 2) Fallback: ancien comportement
             $sql = 'SELECT s.id_solo
                     FROM solo s
                     WHERE s.id_solo NOT IN (

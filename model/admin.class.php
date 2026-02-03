@@ -196,6 +196,170 @@ class adminModel
         $st->execute();
         return $st->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    // ===================== Evaluation Sets (Series) =====================
+    public function listEvaluationSets()
+    {
+        $sql = 'SELECT es.id, es.title, es.is_active, es.is_deployed, es.created_at,
+                       (SELECT COUNT(*) FROM evaluation_set_questions eq WHERE eq.set_id = es.id) AS question_count
+                FROM evaluation_sets es
+                ORDER BY es.created_at DESC';
+        return $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function listQuestionsForSet(int $setId)
+    {
+        $sql = 'SELECT s.id_solo, s.question_solo, s.reponse_a_solo, s.reponse_b_solo, s.reponse_c_solo, s.reponse_d_solo, s.bonne_reponse_solo
+                FROM evaluation_set_questions eq
+                INNER JOIN solo s ON s.id_solo = eq.id_solo
+                WHERE eq.set_id = :sid
+                ORDER BY COALESCE(eq.position, 999999), s.id_solo ASC';
+        $st = $this->pdo->prepare($sql);
+        $st->bindValue(':sid', $setId, PDO::PARAM_INT);
+        $st->execute();
+        return $st->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getDeployedSet(): ?array
+    {
+        $row = $this->pdo->query('SELECT id, title FROM evaluation_sets WHERE is_active = 1 AND is_deployed = 1 LIMIT 1')->fetch(PDO::FETCH_ASSOC);
+        return $row ?: null;
+    }
+
+    public function toggleDeploy(int $setId): bool
+    {
+        // Si déjà déployé => annuler; sinon => déployer uniquement celui-ci (s'il est actif et possède des questions)
+        $this->pdo->beginTransaction();
+        try {
+            // Verrouiller la ligne du set ciblé et vérifier l'état
+            $st = $this->pdo->prepare('SELECT id, is_active, is_deployed FROM evaluation_sets WHERE id = :id FOR UPDATE');
+            $st->bindValue(':id', $setId, PDO::PARAM_INT);
+            $st->execute();
+            $row = $st->fetch(PDO::FETCH_ASSOC);
+            if (!$row) { $this->pdo->rollBack(); return false; }
+
+            $isActive = (int)($row['is_active'] ?? 0) === 1;
+            $isDeployed = (int)($row['is_deployed'] ?? 0) === 1;
+
+            if ($isDeployed) {
+                // Annuler le déploiement
+                $st2 = $this->pdo->prepare('UPDATE evaluation_sets SET is_deployed = 0 WHERE id = :id');
+                $st2->bindValue(':id', $setId, PDO::PARAM_INT);
+                $st2->execute();
+                $this->pdo->commit();
+                return true;
+            }
+
+            // Pour déployer: le set doit être actif et avoir au moins une question
+            if (!$isActive) { $this->pdo->rollBack(); return false; }
+
+            $countSt = $this->pdo->prepare('SELECT COUNT(*) FROM evaluation_set_questions WHERE set_id = :sid');
+            $countSt->bindValue(':sid', $setId, PDO::PARAM_INT);
+            $countSt->execute();
+            $qCount = (int)$countSt->fetchColumn();
+            if ($qCount <= 0) { $this->pdo->rollBack(); return false; }
+
+            // Rendre unique: tout remettre à 0 puis activer celui-ci
+            $this->pdo->exec('UPDATE evaluation_sets SET is_deployed = 0');
+            $st3 = $this->pdo->prepare('UPDATE evaluation_sets SET is_deployed = 1 WHERE id = :id AND is_active = 1');
+            $st3->bindValue(':id', $setId, PDO::PARAM_INT);
+            $st3->execute();
+
+            $this->pdo->commit();
+            return true;
+        } catch (Throwable $e) {
+            if ($this->pdo->inTransaction()) { $this->pdo->rollBack(); }
+            return false;
+        }
+    }
+
+    public function deleteEvaluationSet(int $setId): bool
+    {
+        // Refuser la suppression si le set est déployé
+        $st = $this->pdo->prepare('SELECT is_deployed FROM evaluation_sets WHERE id = :id');
+        $st->bindValue(':id', $setId, PDO::PARAM_INT);
+        $st->execute();
+        $isDeployed = (int)($st->fetchColumn() ?: 0) === 1;
+        if ($isDeployed) { return false; }
+
+        $this->pdo->beginTransaction();
+        try {
+            // Supprimer les associations de questions
+            $st1 = $this->pdo->prepare('DELETE FROM evaluation_set_questions WHERE set_id = :sid');
+            $st1->bindValue(':sid', $setId, PDO::PARAM_INT);
+            $st1->execute();
+
+            // Supprimer le set
+            $st2 = $this->pdo->prepare('DELETE FROM evaluation_sets WHERE id = :sid');
+            $st2->bindValue(':sid', $setId, PDO::PARAM_INT);
+            $st2->execute();
+
+            $this->pdo->commit();
+            return true;
+        } catch (Throwable $e) {
+            if ($this->pdo->inTransaction()) { $this->pdo->rollBack(); }
+            return false;
+        }
+    }
+
+    public function getEvaluationSet(int $id): ?array
+    {
+        $st = $this->pdo->prepare('SELECT id, title, is_active, is_deployed, created_at FROM evaluation_sets WHERE id = :id LIMIT 1');
+        $st->bindValue(':id', $id, PDO::PARAM_INT);
+        $st->execute();
+        $row = $st->fetch(PDO::FETCH_ASSOC);
+        return $row ?: null;
+    }
+
+    public function createEvaluationSet(string $title, int $isActive = 1): ?int
+    {
+        $st = $this->pdo->prepare('INSERT INTO evaluation_sets (title, is_active, is_deployed, created_at) VALUES (:t, :a, 0, NOW())');
+        $st->bindValue(':t', $title, PDO::PARAM_STR);
+        $st->bindValue(':a', $isActive, PDO::PARAM_INT);
+        if ($st->execute()) {
+            return (int)$this->pdo->lastInsertId();
+        }
+        return null;
+    }
+
+    public function updateEvaluationSet(int $id, string $title, int $isActive = 1): bool
+    {
+        $st = $this->pdo->prepare('UPDATE evaluation_sets SET title = :t, is_active = :a WHERE id = :id');
+        $st->bindValue(':t', $title, PDO::PARAM_STR);
+        $st->bindValue(':a', $isActive, PDO::PARAM_INT);
+        $st->bindValue(':id', $id, PDO::PARAM_INT);
+        return $st->execute();
+    }
+
+    public function replaceSetQuestions(int $setId, array $questionIds): bool
+    {
+        $this->pdo->beginTransaction();
+        try {
+            $stDel = $this->pdo->prepare('DELETE FROM evaluation_set_questions WHERE set_id = :sid');
+            $stDel->bindValue(':sid', $setId, PDO::PARAM_INT);
+            $stDel->execute();
+
+            if (!empty($questionIds)) {
+                $stIns = $this->pdo->prepare('INSERT INTO evaluation_set_questions (set_id, id_solo, position) VALUES (:sid, :qid, :pos)');
+                $pos = 1;
+                foreach ($questionIds as $qid) {
+                    $qid = (int)$qid;
+                    if ($qid <= 0) continue;
+                    $stIns->bindValue(':sid', $setId, PDO::PARAM_INT);
+                    $stIns->bindValue(':qid', $qid, PDO::PARAM_INT);
+                    $stIns->bindValue(':pos', $pos, PDO::PARAM_INT);
+                    $stIns->execute();
+                    $pos++;
+                }
+            }
+
+            $this->pdo->commit();
+            return true;
+        } catch (Throwable $e) {
+            if ($this->pdo->inTransaction()) { $this->pdo->rollBack(); }
+            return false;
+        }
+    }
 }
 
 ?>

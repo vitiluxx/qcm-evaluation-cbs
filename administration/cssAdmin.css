@@ -1,0 +1,154 @@
+
+.sidebar {
+    width: 250px;
+    background-color: #111827; /* noir profond */
+    color: white;
+    padding-top: 20px;
+    flex-shrink: 0;
+    height: 100vh;
+    position: fixed;
+    overflow-y: auto;
+    transition: all 0.3s ease;
+    z-index: 1000;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar a {
+    color: #e5e7eb;
+    text-decoration: none;
+    padding: 12px 20px;
+    display: block;
+    transition: all 0.3s ease;
+    border-left: 3px solid transparent;
+    font-size: 0.9rem;
+}
+
+.sidebar a:hover {
+    background-color: #1f2937;
+    color: #fff;
+    border-left: 3px solid #f97316; /* orange */
+}
+
+.sidebar a i {
+    margin-right: 10px;
+    width: 20px;
+    text-align: center;
+}
+
+.sidebar .btn {
+    margin: 10px;
+    width: calc(100% - 20px);
+}
+
+.sidebar h3 {
+    padding: 0 20px;
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+    color: #f8f9fa;
+}
+
+.sidebar ul {
+    padding-left: 0;
+}
+
+.sidebar li {
+    list-style: none;
+    margin-bottom: 5px;
+}
+
+/* Contenu principal */
+.main-content {
+    flex-grow: 1;
+    margin-left: 250px; /* Même largeur que le sidebar */
+    transition: margin-left 0.3s ease;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.container-fluid {
+    padding: 20px;
+    flex: 1;
+}
+
+.boutton_rouge_reinitialiser {
+    background-color: #f97316; /* orange */
+    color: #111827; /* texte sombre sur orange */
+    padding: 10px 20px;
+    border: none;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.boutton_rouge_reinitialiser:hover {
+    background-color: #ea580c; /* orange plus sombre */
+    color: #fff;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .sidebar {
+        left: -250px;
+    }
+    
+    .sidebar.active {
+        left: 0;
+    }
+    
+    .main-content {
+        margin-left: 0;
+    }
+    
+    .sidebar-toggle {
+        display: block;
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        z-index: 1050;
+        background-color: #111827;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        cursor: pointer;
+        border-radius: 4px;
+    }
+}
+
+/* Bouton Toggle (à ajouter dans votre header) */
+.sidebar-toggle {
+    display: none; /* Masqué par défaut sur desktop */
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    z-index: 1050;
+    background-color: #111827;
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.sidebar-toggle:hover {
+    background-color: #1f2937;
+}
+
+/* Style pour la page active */
+.sidebar a.active {
+    background-color: #1f2937;
+    color: #fff;
+    border-left: 3px solid #f97316; /* orange */
+    font-weight: 500;
+}
+
+.main-content.sidebar-active {
+    transform: translateX(250px);
+    position: relative;
+    overflow: hidden;
+}
+
+@media (min-width: 769px) {
+    .sidebar-toggle {
+        display: none !important;
+    }
+}

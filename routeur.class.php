@@ -26,6 +26,8 @@
                           "mainQcm.php" =>             ["controller" => "allMethod", "method" => "affichePageMainSolo"],
                           "admin_qcm.php" =>           ["controller" => "allMethod", "method" => "affichePageAdminSoloList"],
                           "admin_qcm_edit.php" =>      ["controller" => "allMethod", "method" => "affichePageAdminSoloEdit"],
+                          "admin_evaluations.php" =>    ["controller" => "allMethod", "method" => "affichePageAdminEvaluationSets"],
+                          "admin_evaluations_edit.php" => ["controller" => "allMethod", "method" => "affichePageAdminEvaluationSetEdit"],
 
                           "formulaire" =>              ["controller" => "allMethod", "method" => "affichePageFormulaire"],
                           "accueil" =>                 ["controller" => "allMethod", "method" => "affichePageAccueil" ], 
@@ -46,12 +48,17 @@
                           "mainQcm" =>                 ["controller" => "allMethod", "method" => "affichePageMainSolo"],
                           "admin_qcm" =>               ["controller" => "allMethod", "method" => "affichePageAdminSoloList"],
                           "admin_qcm_edit" =>          ["controller" => "allMethod", "method" => "affichePageAdminSoloEdit"],
+                          "admin_evaluations" =>       ["controller" => "allMethod", "method" => "affichePageAdminEvaluationSets"],
+                          "admin_evaluations_toggle" => ["controller" => "allMethod", "method" => "affichePageAdminEvaluationSetToggle"],
+                          "admin_evaluations_delete" => ["controller" => "allMethod", "method" => "affichePageAdminEvaluationSetDelete"],
+                          "admin_evaluations_edit" =>  ["controller" => "allMethod", "method" => "affichePageAdminEvaluationSetEdit"],
 
                           // Alias FR supplémentaires
                           "tableau_de_bord" =>         ["controller" => "allMethod", "method" => "affichePageDashboard"],
                           "publier_qcm" =>             ["controller" => "allMethod", "method" => "affichePageFormulaire"],
                           "gestion_qcm" =>             ["controller" => "allMethod", "method" => "affichePageAdminSoloList"],
                           "modifier_qcm" =>            ["controller" => "allMethod", "method" => "affichePageAdminSoloEdit"],
+                          "evaluations" =>             ["controller" => "allMethod", "method" => "affichePageAdminEvaluationSets"],
                           "connexion_admin" =>         ["controller" => "allMethod", "method" => "affichePageAdminLogin"],
                           "deconnexion" =>             ["controller" => "allMethod", "method" => "affichePageLogout"],
                           "journal_tentative" =>       ["controller" => "allMethod", "method" => "affichePageAttemptLog"],

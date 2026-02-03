@@ -207,7 +207,7 @@ class allMethod
  
                 if($testInsertion === true)
                 {
-                    ?><script>alert("QUIZ SOLO inserer avec succes");</script><?php
+                    ?><script>alert("Evaluation inserée avec succès");</script><?php
                 }
                 else {
                     ?><script>alert("Erreur: insertion échouée.");</script><?php
@@ -278,15 +278,33 @@ class allMethod
             exit();
         }
 
+        // Déterminer si un set est déployé
+        include_once(MODEL_ROOT.'admin.class.php');
+        $adminModel = new adminModel($pdo);
+        $deployed = $adminModel->getDeployedSet();
+
         // Vérifier si l'utilisateur a terminé toutes les questions
         $totalQuestions = 0; $totalRepondu = 0; $sessionTerminee = false;
         try {
-            $totalQuestions = (int)$pdo->query('SELECT COUNT(*) FROM solo')->fetchColumn();
-            $stC = $pdo->prepare('SELECT COUNT(*) FROM evaluations WHERE id_utilisateur = :u');
-            $stC->bindParam(':u', $id_utilisateur, PDO::PARAM_INT);
-            $stC->execute();
-            $totalRepondu = (int)$stC->fetchColumn();
-            $sessionTerminee = ($totalQuestions > 0 && $totalRepondu >= $totalQuestions);
+            if ($deployed && isset($deployed['id'])) {
+                // Compter uniquement les questions du set déployé
+                $stQ = $pdo->prepare('SELECT COUNT(*) FROM evaluation_set_questions WHERE set_id = :sid');
+                $stQ->bindValue(':sid', (int)$deployed['id'], PDO::PARAM_INT);
+                $stQ->execute();
+                $totalQuestions = (int)$stQ->fetchColumn();
+
+                // Compter ce que l'utilisateur a déjà validé dans ce set
+                $stC = $pdo->prepare('SELECT COUNT(*) FROM evaluations WHERE id_utilisateur = :u AND set_id = :sid');
+                $stC->bindValue(':u', $id_utilisateur, PDO::PARAM_INT);
+                $stC->bindValue(':sid', (int)$deployed['id'], PDO::PARAM_INT);
+                $stC->execute();
+                $totalRepondu = (int)$stC->fetchColumn();
+                $sessionTerminee = ($totalQuestions > 0 && $totalRepondu >= $totalQuestions);
+            } else {
+                // Aucun set déployé: considérer la séance terminée et afficher un message
+                $sessionTerminee = true;
+                $tirageMessage = "Aucune évaluation déployée pour le moment. Séance terminée.";
+            }
         } catch (Throwable $e) {
             // en cas d'erreur SQL, on considère non terminé pour ne pas bloquer
             $sessionTerminee = false;
@@ -302,14 +320,55 @@ class allMethod
         $tirageEffectue = false;
         $idTire = null;
         if ($sessionTerminee) {
-            $tirageMessage = "Séance d'évaluation terminée: vous avez répondu à toutes les questions disponibles.";
+            if (empty($tirageMessage)) {
+                $tirageMessage = "Séance d'évaluation terminée: vous avez répondu à toutes les questions disponibles.";
+            }
         } elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tirer'])) {
             // Essayer en excluant aussi les questions déjà tirées dans cette session
             $exclude = $_SESSION['tirages_exclus'][$id_utilisateur];
-            if (method_exists($soloModel, 'getRandomSoloIdExcluding')) {
-                $idSolo = $soloModel->getRandomSoloIdExcluding($id_utilisateur, $exclude);
-            } else {
-                $idSolo = $soloModel->getRandomSoloId($id_utilisateur);
+
+            // Priorité: si une évaluation (set) est déployée, tirer dans ce set uniquement
+            $idSolo = null;
+            try {
+                if ($deployed && isset($deployed['id'])) {
+                    // Construire la requête de tirage aléatoire dans le set déployé
+                    $params = [':u' => (int)$id_utilisateur, ':sid' => (int)$deployed['id']];
+                    $excludeSql = '';
+                    if (!empty($exclude)) {
+                        $clean = array_values(array_filter(array_map('intval', $exclude), function($v){ return $v > 0; }));
+                        if (!empty($clean)) {
+                            $ph = [];
+                            foreach ($clean as $i=>$val) { $k = ":ex$i"; $ph[] = $k; $params[$k] = $val; }
+                            $excludeSql = ' AND s.id_solo NOT IN ('.implode(',', $ph).')';
+                        }
+                    }
+                    $sql = 'SELECT s.id_solo
+                            FROM evaluation_set_questions eq
+                            INNER JOIN solo s ON s.id_solo = eq.id_solo
+                            WHERE eq.set_id = :sid
+                              AND s.id_solo NOT IN (
+                                SELECT e.id_solo FROM evaluations e WHERE e.id_utilisateur = :u
+                              )' . $excludeSql . '
+                            ORDER BY RAND() LIMIT 1';
+                    $st = $pdo->prepare($sql);
+                    foreach ($params as $k=>$v) {
+                        $st->bindValue($k, $v, is_int($v)? PDO::PARAM_INT : PDO::PARAM_STR);
+                    }
+                    $st->execute();
+                    $picked = $st->fetchColumn();
+                    if ($picked) { $idSolo = (int)$picked; }
+                }
+            } catch (Throwable $e) {
+                // Ignorer et retomber sur le comportement par défaut
+            }
+
+            // Fallback: uniquement si aucun set n'est déployé
+            if ($idSolo === null && !($deployed && isset($deployed['id']))) {
+                if (method_exists($soloModel, 'getRandomSoloIdExcluding')) {
+                    $idSolo = $soloModel->getRandomSoloIdExcluding($id_utilisateur, $exclude);
+                } else {
+                    $idSolo = $soloModel->getRandomSoloId($id_utilisateur);
+                }
             }
             if ($idSolo !== null) {
                 $tirageEffectue = true;
@@ -319,8 +378,8 @@ class allMethod
                     $_SESSION['tirages_exclus'][$id_utilisateur][] = $idTire;
                 }
             } else {
-                // Plus de question disponible pour cet utilisateur
-                $tirageMessage = "Aucune autre question disponible. Séance terminée.";
+                // Plus de question disponible (dans le set déployé) ou aucun set déployé
+                $tirageMessage = $tirageMessage ?? "Aucune autre question disponible. Séance terminée.";
             }
         }
 
@@ -345,6 +404,69 @@ class allMethod
         $this->requireAdmin();
         $this->ensureDb();
         include(ADMIN_ROOT."dashboard.php");
+    }
+
+    /*============================================================================================================================ */    
+    // Admin: Liste des évaluations (sets) avec expand et toggle deploy
+    public function affichePageAdminEvaluationSets()
+    {
+        $this->requireAdmin();
+        $this->ensureDb();
+        if (empty($_SESSION['csrf_token'])) { $_SESSION['csrf_token'] = bin2hex(random_bytes(32)); }
+        $pdo = $GLOBALS['connexionBd'] ?? null;
+        include_once(MODEL_ROOT.'admin.class.php');
+        $adminModel = new adminModel($pdo);
+        $sets = $adminModel->listEvaluationSets();
+        // Précharger les questions de chaque set pour l'expand (simple et sans appel AJAX)
+        $setQuestions = [];
+        foreach ($sets as $s) {
+            $setQuestions[(int)$s['id']] = $adminModel->listQuestionsForSet((int)$s['id']);
+        }
+        include(ADMIN_ROOT.'admin_evaluations.php');
+    }
+
+    // Admin: action pour toggler le déploiement d'un set (Déployer/Annuler)
+    public function affichePageAdminEvaluationSetToggle()
+    {
+        $this->requireAdmin();
+        $this->ensureDb();
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') { header('Location: '.HOST.'admin_evaluations'); exit; }
+        $postedToken = $_POST['csrf_token'] ?? '';
+        if (empty($_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $postedToken)) {
+            header('Location: '.HOST.'admin_evaluations');
+            exit;
+        }
+        $id = isset($_POST['set_id']) ? (int)$_POST['set_id'] : 0;
+        if ($id > 0) {
+            $pdo = $GLOBALS['connexionBd'] ?? null;
+            include_once(MODEL_ROOT.'admin.class.php');
+            $adminModel = new adminModel($pdo);
+            $adminModel->toggleDeploy($id);
+        }
+        header('Location: '.HOST.'admin_evaluations');
+        exit;
+    }
+
+    // Admin: suppression d'un set d'évaluation (si non déployé)
+    public function affichePageAdminEvaluationSetDelete()
+    {
+        $this->requireAdmin();
+        $this->ensureDb();
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') { header('Location: '.HOST.'admin_evaluations'); exit; }
+        $postedToken = $_POST['csrf_token'] ?? '';
+        if (empty($_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $postedToken)) {
+            header('Location: '.HOST.'admin_evaluations');
+            exit;
+        }
+        $id = isset($_POST['set_id']) ? (int)$_POST['set_id'] : 0;
+        if ($id > 0) {
+            $pdo = $GLOBALS['connexionBd'] ?? null;
+            include_once(MODEL_ROOT.'admin.class.php');
+            $adminModel = new adminModel($pdo);
+            $adminModel->deleteEvaluationSet($id);
+        }
+        header('Location: '.HOST.'admin_evaluations');
+        exit;
     }
     
     /*============================================================================================================================ */    
@@ -472,13 +594,30 @@ class allMethod
                 echo json_encode(['ok'=>false,'error'=>'Paramètres invalides']);
                 return;
             }
-            // Insert dans la table evaluations (à créer côté BDD par l'admin)
-            $sql = 'INSERT INTO evaluations (id_utilisateur, id_solo, attempts, created_at) VALUES (:u, :s, :a, NOW())';
-            $st = $pdo->prepare($sql);
-            $st->bindParam(':u', $idUtilisateur, PDO::PARAM_INT);
-            $st->bindParam(':s', $idSolo, PDO::PARAM_INT);
-            $st->bindParam(':a', $attempts, PDO::PARAM_INT);
-            $st->execute();
+            // Insérer dans evaluations, avec set_id si une évaluation est déployée
+            $setId = null;
+            try {
+                include_once(MODEL_ROOT.'admin.class.php');
+                $adminModel = new adminModel($pdo);
+                $dep = $adminModel->getDeployedSet();
+                if ($dep && isset($dep['id'])) { $setId = (int)$dep['id']; }
+            } catch (Throwable $e) { /* ignore */ }
+            if ($setId) {
+                $sql = 'INSERT INTO evaluations (id_utilisateur, id_solo, set_id, attempts, created_at) VALUES (:u, :s, :sid, :a, NOW())';
+                $st = $pdo->prepare($sql);
+                $st->bindParam(':u', $idUtilisateur, PDO::PARAM_INT);
+                $st->bindParam(':s', $idSolo, PDO::PARAM_INT);
+                $st->bindParam(':sid', $setId, PDO::PARAM_INT);
+                $st->bindParam(':a', $attempts, PDO::PARAM_INT);
+                $st->execute();
+            } else {
+                $sql = 'INSERT INTO evaluations (id_utilisateur, id_solo, attempts, created_at) VALUES (:u, :s, :a, NOW())';
+                $st = $pdo->prepare($sql);
+                $st->bindParam(':u', $idUtilisateur, PDO::PARAM_INT);
+                $st->bindParam(':s', $idSolo, PDO::PARAM_INT);
+                $st->bindParam(':a', $attempts, PDO::PARAM_INT);
+                $st->execute();
+            }
             echo json_encode(['ok'=>true]);
         } catch (Throwable $e) {
             http_response_code(500);
@@ -563,6 +702,61 @@ class allMethod
         }
         header('Location: '.HOST.'tableau_de_bord');
         exit;
+    }
+    
+    // Admin: création/édition d'une évaluation (set) + assignation des questions
+    public function affichePageAdminEvaluationSetEdit()
+    {
+        $this->requireAdmin();
+        $this->ensureDb();
+        if (empty($_SESSION['csrf_token'])) { $_SESSION['csrf_token'] = bin2hex(random_bytes(32)); }
+        $pdo = $GLOBALS['connexionBd'] ?? null;
+        include_once(MODEL_ROOT.'admin.class.php');
+        include_once(MODEL_ROOT.'solo.class.php');
+        $adminModel = new adminModel($pdo);
+        $soloModel = new solo($pdo);
+
+        $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+        $messages = [];
+        $set = null;
+        if ($id > 0) {
+            $set = $adminModel->getEvaluationSet($id);
+            if (!$set) { $messages[] = ['type'=>'warning','text'=>'Évaluation introuvable.']; $id = 0; }
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $postedToken = $_POST['csrf_token'] ?? '';
+            if (!hash_equals($_SESSION['csrf_token'], $postedToken)) {
+                $messages[] = ['type'=>'danger','text'=>'Jeton CSRF invalide.'];
+            } else {
+                $title = trim((string)($_POST['title'] ?? ''));
+                $isActive = isset($_POST['is_active']) ? 1 : 0;
+                $qids = isset($_POST['question_ids']) && is_array($_POST['question_ids']) ? array_map('intval', $_POST['question_ids']) : [];
+                if ($title === '') {
+                    $messages[] = ['type'=>'danger','text'=>'Le titre est requis.'];
+                } else {
+                    if ($id > 0) {
+                        $ok = $adminModel->updateEvaluationSet($id, $title, $isActive);
+                        if ($ok) { $adminModel->replaceSetQuestions($id, $qids); }
+                    } else {
+                        $newId = $adminModel->createEvaluationSet($title, $isActive);
+                        if ($newId) { $adminModel->replaceSetQuestions((int)$newId, $qids); $id = (int)$newId; }
+                    }
+                    header('Location: '.HOST.'admin_evaluations');
+                    exit;
+                }
+            }
+        }
+
+        // Données pour la vue
+        if ($id > 0 && !$set) { $set = $adminModel->getEvaluationSet($id); }
+        $allQuestions = $soloModel->getAll();
+        $assigned = [];
+        if ($id > 0) {
+            $rows = $adminModel->listQuestionsForSet($id);
+            foreach ($rows as $r) { $assigned[(int)$r['id_solo']] = true; }
+        }
+        include(ADMIN_ROOT.'admin_evaluations_edit.php');
     }
 }
     

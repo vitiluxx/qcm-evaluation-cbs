@@ -19,7 +19,6 @@ body
     margin: 0;/* elimination des espaces tout aux bordures de la page car certain navigateurs mettent des valeurs de margin non voulu a notre page*/
     padding: 0;/*elimination des espaces inutile a l'interieur de la boite de page car certain navigateurs mettent des valeurs de padding non voulu a notre page*/
     word-spacing: 0px; /* Réduire l'espacement entre les mots */
-    padding-top: 55px;
 }
 
 
@@ -176,6 +175,54 @@ body
     background-color: salmon; /* Couleur des mauvaises réponses */
 }
 /*============================================================================================= */
+/* QCM feedback visuals (moved from inline <style> in mainSolo.php) */
+.feedback { text-align:center; margin-top: 24px; }
+.emoji-container {
+    display: none; /* Caché par défaut */
+    font-size: 70px;
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: bounce 1s ease-in-out; /* Animation rebond */
+}
+.emoji-caption { display:none; margin-top: 12px; font-size: 18px; color:#b91c1c; font-weight:600; text-align:center; }
+.feedback-text { margin-top: 12px; font-size: 1.05rem; font-weight: 600; }
+.feedback-text.error { color: #b91c1c; }
+.feedback-text.success { color: #15803d; }
+
+@keyframes bounce {
+    0% { transform: translate(-50%, -50%) scale(0); }
+    50% { transform: translate(-50%, -50%) scale(1.2); }
+    100% { transform: translate(-50%, -50%) scale(1); }
+}
+
+/* Page nom_utilisateur (moved from inline <style> in nom_utilisateur.php) */
+.form-saisie-nom {
+    max-width: 400px;
+    margin: 100px auto;
+    background: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    text-align: center;
+}
+.form-saisie-nom input {
+    padding: 10px;
+    width: 80%;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+.form-saisie-nom button {
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: none;
+    background: #0589b1;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+}
+.form-saisie-nom button:hover { background: #02607a; }
 /* special accueil */
 
 .main-corpsPageAccueil{

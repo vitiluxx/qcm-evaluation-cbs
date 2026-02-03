@@ -69,7 +69,9 @@
 
     <!-- Zone de feedback (regroupe emoji + message) -->
     <div id="feedback" class="feedback">
-        <div id="emojiContainer" class="emoji-container">😢😭😝</div>
+        <div id="emojiContainer" class="emoji-container">😢😭😝
+            <div id="emojiCaption" class="emoji-caption"></div>
+        </div>
         <div id="feedbackText" class="feedback-text"></div>
     </div>
 </div>
@@ -88,6 +90,7 @@
     transform: translate(-50%, -50%);
     animation: bounce 1s ease-in-out; /* Animation rebond */
 }
+.emoji-caption { display:none; margin-top: 12px; font-size: 18px; color:#b91c1c; font-weight:600; text-align:center; }
 .feedback-text { margin-top: 12px; font-size: 1.05rem; font-weight: 600; }
 .feedback-text.error { color: #b91c1c; }
 .feedback-text.success { color: #15803d; }
@@ -107,6 +110,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const goodAnswer = goodAnswerNonFormater.trim(); // Nettoyage des espaces éventuels
     const emojiContainer = document.getElementById('emojiContainer');
     const feedbackText = document.getElementById('feedbackText');
+    const emojiCaption = document.getElementById('emojiCaption');
     const btnSuivant = document.getElementById('button-suivant');
     const idSolo = <?= json_encode((int)($_GET['id'] ?? 0)) ?>;
     const idUtilisateur = <?= json_encode((int)($_GET['id_utilisateur'] ?? 0)) ?>;
@@ -198,15 +202,31 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.classList.add('wrong'); // Mauvaise réponse
                 attempts += 1; // incrémenter le compteur de mauvaises réponses
                 // Ne pas dévoiler la bonne réponse; afficher feedback + emoji
+                // Choisir un message court et sympa selon le nombre d'essais
+                let msg = '';
+                if (attempts === 1) {
+                    msg = "Oups, raté ! Réessayez.";
+                } else if (attempts === 2) {
+                    msg = "Oh non, encore une fausse… Vous y êtes presque, essayez encore !";
+                } else {
+                    msg = "Courage ! Cette fois, c’est la bonne…";
+                }
                 if (feedbackText) {
-                    feedbackText.textContent = 'Mauvaise réponse, essayez à nouveau';
+                    feedbackText.textContent = msg;
                     feedbackText.classList.remove('success');
                     feedbackText.classList.add('error');
                 }
                 // Afficher temporairement l'emoji de tristesse
                 emojiContainer.style.display = 'block';
+                if (emojiCaption) {
+                    emojiCaption.textContent = msg;
+                    emojiCaption.style.display = 'block';
+                }
                 setTimeout(() => {
                     emojiContainer.style.display = 'none';
+                    if (emojiCaption) {
+                        emojiCaption.style.display = 'none';
+                    }
                 }, 1500); // Emoji visible pendant 2 secondes
 
                 // Réactiver uniquement les autres choix non encore cliqués après un court délai

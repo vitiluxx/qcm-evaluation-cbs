@@ -8,6 +8,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="<?=ASSET_HOST?>css.css">
     <link rel="stylesheet" href="<?=ADMIN_HOST?>cssAdmin.css">
+    <!-- Font Awesome (icônes) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTTXRNtC2bX7V3qZr5G3v2q2o3mQ3kq1Q2zG5eX8z3w1J1bQwF2b3zq7e6p5yq1t2u3v4w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="<?=ASSET_HOST; ?>js.js" defer></script>
     <!-- Bootstrap 5 JS Bundle (Popper inclus) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous" defer></script>

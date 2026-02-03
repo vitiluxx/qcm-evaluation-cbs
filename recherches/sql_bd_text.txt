@@ -10,6 +10,8 @@ DROP TABLE IF EXISTS solo;
 DROP TABLE IF EXISTS utilisateurs;
 DROP TABLE IF EXISTS evaluations;
 DROP TABLE IF EXISTS evaluation_attempts;
+DROP TABLE IF EXISTS evaluation_set_questions;
+DROP TABLE IF EXISTS evaluation_sets;
 
 __________________________________
 
@@ -38,6 +40,28 @@ CREATE TABLE admins (
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- Séries d'évaluations (par Titre)
+CREATE TABLE IF NOT EXISTS evaluation_sets (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  title VARCHAR(200) NOT NULL,
+  is_active TINYINT(1) NOT NULL DEFAULT 1,
+  is_deployed TINYINT(1) NOT NULL DEFAULT 0,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  INDEX (is_active),
+  INDEX (is_deployed)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Liaison des questions à une série
+CREATE TABLE IF NOT EXISTS evaluation_set_questions (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  set_id INT NOT NULL,
+  id_solo INT NOT NULL,
+  position INT DEFAULT NULL,
+  UNIQUE KEY uniq_set_question (set_id, id_solo),
+  INDEX idx_set (set_id),
+  INDEX idx_solo (id_solo)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE evaluations (
   id INT AUTO_INCREMENT PRIMARY KEY,
   id_utilisateur INT NOT NULL,
@@ -48,8 +72,12 @@ CREATE TABLE evaluations (
   INDEX (id_solo),
   INDEX (created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+-- Historiser la série utilisée dans l'évaluation (optionnel mais recommandé)
+ALTER TABLE evaluations
+  ADD COLUMN set_id INT NULL AFTER id_solo;
 
-CREATE TABLE evaluation_attempts (
+
+CREATE TABLE IF NOT EXISTS evaluation_attempts (
   id INT AUTO_INCREMENT PRIMARY KEY,
   session_id VARCHAR(64) NOT NULL,
   id_utilisateur INT NOT NULL,

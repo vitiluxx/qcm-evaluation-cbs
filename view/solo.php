@@ -10,20 +10,24 @@
         <div id="nombreAnime" style="font-size:60px; margin-bottom:20px; color:#333; min-height:72px;"></div>
 
         <?php if (!empty($tirageMessage)): ?>
-            <div style="text-align:center;color:#b91c1c;margin-top:10px;">
-                <?= htmlspecialchars($tirageMessage) ?>
+            <div style="text-align:center;color:#b91c1c;margin-top:12px;font-size:1.15em;">
+                <strong><?= htmlspecialchars($tirageMessage) ?></strong>
             </div>
         <?php endif; ?>
 
-        <!-- Bouton de tirage -->
-        <form method="post" id="form-tirer">
-            <!-- Bouton rond rouge (styled via css.css) -->
-            <button type="submit" name="tirer" id="btn-tirer" class="boutton_rouge"><span style="display:inline-block; max-width:80%; font-size:clamp(16px, 3.2vw, 22px); line-height:1; letter-spacing:0.5px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight: bold;">TIRER</span></button>
-        </form>
+        <?php if (empty($sessionTerminee)): ?>
+            <!-- Bouton de tirage -->
+            <form method="post" id="form-tirer">
+                <!-- Bouton rond rouge (styled via css.css) -->
+                <button type="submit" name="tirer" id="btn-tirer" class="boutton_rouge"><span style="display:inline-block; max-width:80%; font-size:clamp(16px, 3.2vw, 22px); line-height:1; letter-spacing:0.5px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight: bold;">TIRER</span></button>
+            </form>
+        <?php endif; ?>
 
-        <p class="note-explication">
-            Clique sur "TIRER" pour piocher un numéro et démarrer une question.
-        </p>
+        <?php if (empty($sessionTerminee)): ?>
+            <p class="note-explication">
+                Clique sur "TIRER" pour piocher un numéro et démarrer une question.
+            </p>
+        <?php endif; ?>
         <p id="redirNote" class="note-explication"></p>
     </div>
 </main>
